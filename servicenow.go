@@ -66,7 +66,7 @@ func (snClient *ServiceNowClient) doRequest(req *http.Request) ([]byte, error) {
 }
 
 func (snClient *ServiceNowClient) create(body []byte) ([]byte, error) {
-	url := fmt.Sprintf(snClient.baseURL, "/", snClient.apiPath)
+	url := fmt.Sprint(snClient.baseURL, snClient.apiPath)
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
 	if err != nil {
 		log.Errorf("Error creating request. %s", err)

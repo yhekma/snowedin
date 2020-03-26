@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/prometheus/alertmanager/template"
 	"net/http"
 	tmpltext "text/template"
@@ -23,12 +22,15 @@ func CreateSnowServer(config Config, snowClient Client) *snowServer {
 
 func (s *snowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	data, _ := readRequestBody(r)
+	incident := Incident{}
 	for _, alert := range data.Alerts {
 		for k, v := range s.defaultIncident {
 			parsedText, _ := applyTemplate(v, alert)
-			_, _ = fmt.Fprintf(w, "%s: %s", k, parsedText)
+			incident[k] = parsedText
 		}
 	}
+	b, _ := json.Marshal(incident)
+	s.serviceNowClient.create(b)
 }
 
 func readRequestBody(r *http.Request) (template.Data, error) {
