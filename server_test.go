@@ -2,18 +2,19 @@ package snowedin
 
 import (
 	"bytes"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
-
-	//"github.com/prometheus/alertmanager/template"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestGetParsedString(t *testing.T) {
-	server := &SnowServer{}
-	server.FieldConfig = map[string]string{"bla": "{{.Status}}"}
-	//testjson, _ := json.Marshal(testmap)
+	fieldConfig := FieldConfig{}
+	configYaml, _ := ioutil.ReadFile("config.yaml")
+	_ = yaml.Unmarshal(configYaml, &fieldConfig)
+	server := &SnowServer{fieldConfig}
+
 	testjson, _ := ioutil.ReadFile("test.json")
 
 	t.Run("test if we get a string back", func(t *testing.T) {

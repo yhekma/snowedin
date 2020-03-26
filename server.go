@@ -9,8 +9,10 @@ import (
 	tmpltext "text/template"
 )
 
+type FieldConfig map[string]string
+
 type SnowServer struct {
-	FieldConfig map[string]string
+	FieldConfig FieldConfig
 }
 
 func (s *SnowServer) ServerHTTP(w http.ResponseWriter, r *http.Request) {
