@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	servicenowBaseUrl = "http://%s.service-now.com"
+	servicenowBaseUrl = "https://%s.service-now.com"
 	servicenowAPIPath = "%s"
 )
 
@@ -50,7 +50,7 @@ func (snClient *ServiceNowClient) doRequest(req *http.Request) ([]byte, error) {
 	req.Header.Set("Authorization", snClient.authHeader)
 	resp, err := snClient.client.Do(req)
 
-	if err != nil {
+	if err != nil || resp.StatusCode != 200 {
 		log.Errorf("Error sending the request. %s", err)
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (snClient *ServiceNowClient) doRequest(req *http.Request) ([]byte, error) {
 
 func (snClient *ServiceNowClient) create(body []byte) ([]byte, error) {
 	url := fmt.Sprint(snClient.baseURL, snClient.apiPath)
-	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	if err != nil {
 		log.Errorf("Error creating request. %s", err)
 		return nil, err

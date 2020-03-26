@@ -5,6 +5,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"net/http"
+	"os"
 )
 
 // TODO: make this an argument
@@ -28,18 +29,25 @@ type Client interface {
 }
 
 func main() {
-	//username := os.Getenv("SEVICENOW_USERNAME")
-	//password := os.Getenv("SERVICENOW_PASSWORD")
+	username := os.Getenv("SERVICENOW_USERNAME")
+	password := os.Getenv("SERVICENOW_PASSWORD")
 	config := Config{}
 	configYaml, _ := ioutil.ReadFile(configFile)
 	_ = yaml.Unmarshal(configYaml, &config)
 
 	snowConfig := config.ServiceNow
+	if username == "" {
+		username = snowConfig.UserName
+	}
+	if password == "" {
+		password = snowConfig.Password
+	}
+
 	snowClient, err := NewServiceNowClient(
 		snowConfig.InstanceName,
 		snowConfig.ApiPath,
-		snowConfig.UserName,
-		snowConfig.Password,
+		username,
+		password,
 	)
 	if err != nil {
 		log.Errorf("could not create servicnowclient. %v", err)

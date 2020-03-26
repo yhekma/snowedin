@@ -3,7 +3,5 @@ default_incident:
   bla: "{{.Status}}"
 
 servicenow_config:
-  instance_name: inst1
-  user_name: user1
-  password: pass1
-  api_path: /api/now/table/incident
+  instance_name: pdsmdev08
+  api_path: /api/now/import/u_incident
