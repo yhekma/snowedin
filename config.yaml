@@ -1,2 +1,8 @@
 ---
-bla: "{{.Status}}"
+default_incident:
+  bla: "{{.Status}}"
+
+servicenow_config:
+  instance_name: inst1
+  user_name: user1
+  password: pass1

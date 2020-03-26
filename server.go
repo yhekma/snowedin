@@ -1,4 +1,4 @@
-package snowedin
+package main
 
 import (
 	"bytes"
@@ -9,16 +9,26 @@ import (
 	tmpltext "text/template"
 )
 
-type FieldConfig map[string]string
-
 type SnowServer struct {
-	FieldConfig FieldConfig
+	defaultIncident  map[string]string
+	snowInstanceName string
+	snowUserName     string
+	snowPassword     string
 }
 
-func (s *SnowServer) ServerHTTP(w http.ResponseWriter, r *http.Request) {
+func CreateSnowServer(config Config) *SnowServer {
+	return &SnowServer{
+		defaultIncident:  config.DefaultIncident,
+		snowInstanceName: config.ServiceNow.InstanceName,
+		snowUserName:     config.ServiceNow.UserName,
+		snowPassword:     config.ServiceNow.Password,
+	}
+}
+
+func (s *SnowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	data, _ := readRequestBody(r)
 	for _, alert := range data.Alerts {
-		for k, v := range s.FieldConfig {
+		for k, v := range s.defaultIncident {
 			parsedText, _ := applyTemplate(v, alert)
 			_, _ = fmt.Fprintf(w, "%s: %s", k, parsedText)
 		}

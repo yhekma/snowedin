@@ -1,4 +1,4 @@
-package snowedin
+package main
 
 import (
 	"bytes"
@@ -10,10 +10,10 @@ import (
 )
 
 func TestGetParsedString(t *testing.T) {
-	fieldConfig := FieldConfig{}
+	config := Config{}
 	configYaml, _ := ioutil.ReadFile("config.yaml")
-	_ = yaml.Unmarshal(configYaml, &fieldConfig)
-	server := &SnowServer{fieldConfig}
+	_ = yaml.Unmarshal(configYaml, &config)
+	server := CreateSnowServer(config)
 
 	testjson, _ := ioutil.ReadFile("test.json")
 
@@ -21,7 +21,7 @@ func TestGetParsedString(t *testing.T) {
 		request := NewJsonPostRequest(testjson, "/webhook")
 		response := httptest.NewRecorder()
 
-		server.ServerHTTP(response, request)
+		server.ServeHTTP(response, request)
 
 		got := response.Body.String()
 		want := "bla: firing"
