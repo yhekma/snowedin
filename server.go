@@ -18,7 +18,7 @@ func (s *SnowServer) ServerHTTP(w http.ResponseWriter, r *http.Request) {
 	for _, alert := range data.Alerts {
 		for k, v := range s.FieldConfig {
 			parsedText, _ := applyTemplate(v, alert)
-			fmt.Printf("%s: %s", k, parsedText)
+			_, _ = fmt.Fprintf(w, "%s: %s", k, parsedText)
 		}
 	}
 }
