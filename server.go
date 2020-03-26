@@ -11,10 +11,10 @@ import (
 
 type snowServer struct {
 	defaultIncident  map[string]string
-	serviceNowClient *ServiceNowClient
+	serviceNowClient Client
 }
 
-func CreateSnowServer(config Config, snowClient *ServiceNowClient) *snowServer {
+func CreateSnowServer(config Config, snowClient Client) *snowServer {
 	return &snowServer{
 		defaultIncident:  config.DefaultIncident,
 		serviceNowClient: snowClient,

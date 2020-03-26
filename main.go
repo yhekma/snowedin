@@ -22,6 +22,11 @@ type SnowConfig struct {
 	ApiPath      string `yaml:"api_path"`
 }
 
+type Client interface {
+	doRequest(req *http.Request) ([]byte, error)
+	create(body []byte) ([]byte, error)
+}
+
 func main() {
 	//username := os.Getenv("SEVICENOW_USERNAME")
 	//password := os.Getenv("SERVICENOW_PASSWORD")
