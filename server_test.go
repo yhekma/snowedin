@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"github.com/cloudflare/cfssl/log"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"net/http"
@@ -10,23 +9,23 @@ import (
 	"testing"
 )
 
+type StubClient struct{}
+
+func (s StubClient) doRequest(req *http.Request) ([]byte, error) {
+	return []byte("200"), nil // TODO: Set this to something we expect
+}
+
+func (s StubClient) create(body []byte) ([]byte, error) {
+	req, _ := http.NewRequest(http.MethodPost, "", bytes.NewBuffer(body))
+	return s.doRequest(req)
+}
+
 func TestGetParsedString(t *testing.T) {
 	config := Config{}
 	configYaml, _ := ioutil.ReadFile("config.yaml")
 	_ = yaml.Unmarshal(configYaml, &config)
-	snowConfig := config.ServiceNow
 
-	snowClient, err := NewServiceNowClient(
-		snowConfig.InstanceName,
-		snowConfig.ApiPath,
-		snowConfig.UserName,
-		snowConfig.Password,
-	)
-	if err != nil {
-		log.Errorf("could not create servicnowclient. %v", err)
-	}
-
-	server := CreateSnowServer(config, snowClient)
+	server := CreateSnowServer(config, StubClient{})
 
 	testjson, _ := ioutil.ReadFile("test.json")
 
@@ -37,7 +36,7 @@ func TestGetParsedString(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		got := response.Body.String()
-		want := "bla: firing"
+		want := "200"
 
 		if got != want {
 			t.Errorf("got '%s' want '%s'", got, want)

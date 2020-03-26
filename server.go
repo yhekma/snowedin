@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/prometheus/alertmanager/template"
 	"net/http"
 	tmpltext "text/template"
@@ -30,7 +31,8 @@ func (s *snowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	b, _ := json.Marshal(incident)
-	s.serviceNowClient.create(b)
+	resp, _ := s.serviceNowClient.create(b)
+	fmt.Fprintf(w, string(resp))
 }
 
 func readRequestBody(r *http.Request) (template.Data, error) {
