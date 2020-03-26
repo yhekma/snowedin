@@ -31,7 +31,6 @@ func (s *snowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	b, _ := json.Marshal(incident)
-	fmt.Println(string(b))
 	resp, _ := s.serviceNowClient.create(b)
 	fmt.Fprintf(w, string(resp))
 }

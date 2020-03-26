@@ -2,17 +2,20 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 )
 
 type StubClient struct{}
 
 func (s StubClient) doRequest(req *http.Request) ([]byte, error) {
-	return []byte("200"), nil // TODO: Set this to something we expect
+	body, _ := ioutil.ReadAll(req.Body)
+	return body, nil
 }
 
 func (s StubClient) create(body []byte) ([]byte, error) {
@@ -28,6 +31,7 @@ func TestGetParsedString(t *testing.T) {
 	server := CreateSnowServer(config, StubClient{})
 
 	testjson, _ := ioutil.ReadFile("test.json")
+	testjsonwant, _ := ioutil.ReadFile("test_want.json")
 
 	t.Run("test if we get a string back", func(t *testing.T) {
 		request := NewJsonPostRequest(testjson, "/webhook")
@@ -35,11 +39,16 @@ func TestGetParsedString(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 
-		got := response.Body.String()
-		want := "200"
+		var (
+			gotJson  interface{}
+			wantJson interface{}
+		)
 
-		if got != want {
-			t.Errorf("got '%s' want '%s'", got, want)
+		_ = json.Unmarshal(response.Body.Bytes(), &gotJson)
+		_ = json.Unmarshal(testjsonwant, &wantJson)
+
+		if !reflect.DeepEqual(gotJson, wantJson) {
+			t.Errorf("got '%s' want '%s'", gotJson, wantJson)
 		}
 	})
 }

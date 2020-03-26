@@ -1,0 +1,13 @@
+{
+  "u_assignment_group'": "TNT_SPT_GLB_TEMTOOLING",
+  "u_business_service'": "TNT-ServiceDesk",
+  "u_category'": "application",
+  "u_contact_type": "event_alert",
+  "u_correlation_display'": "api",
+  "u_description'": "Test automated long desc",
+  "u_function'": "Create",
+  "u_impact'": "3",
+  "u_short_description'": "Test is firing",
+  "u_state'": "1",
+  "u_urgency'": "3"
+}
