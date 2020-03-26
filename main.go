@@ -19,6 +19,7 @@ type SnowConfig struct {
 	InstanceName string `yaml:"instance_name"`
 	UserName     string `yaml:"user_name"`
 	Password     string `yaml:"password"`
+	ApiPath      string `yaml:"api_path"`
 }
 
 func main() {
@@ -27,7 +28,19 @@ func main() {
 	config := Config{}
 	configYaml, _ := ioutil.ReadFile(configFile)
 	_ = yaml.Unmarshal(configYaml, &config)
-	server := CreateSnowServer(config)
+
+	snowConfig := config.ServiceNow
+	snowClient, err := NewServiceNowClient(
+		snowConfig.InstanceName,
+		snowConfig.ApiPath,
+		snowConfig.UserName,
+		snowConfig.Password,
+	)
+	if err != nil {
+		log.Errorf("could not create servicnowclient. %v", err)
+	}
+
+	server := CreateSnowServer(config, snowClient)
 
 	if err := http.ListenAndServe(":5000", server); err != nil {
 		log.Fatalf("could not listen to port 5000 %v", err)

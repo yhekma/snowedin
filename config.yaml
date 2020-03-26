@@ -6,3 +6,4 @@ servicenow_config:
   instance_name: inst1
   user_name: user1
   password: pass1
+  api_path: /api/now/table/incident

@@ -9,23 +9,19 @@ import (
 	tmpltext "text/template"
 )
 
-type SnowServer struct {
+type snowServer struct {
 	defaultIncident  map[string]string
-	snowInstanceName string
-	snowUserName     string
-	snowPassword     string
+	serviceNowClient *ServiceNowClient
 }
 
-func CreateSnowServer(config Config) *SnowServer {
-	return &SnowServer{
+func CreateSnowServer(config Config, snowClient *ServiceNowClient) *snowServer {
+	return &snowServer{
 		defaultIncident:  config.DefaultIncident,
-		snowInstanceName: config.ServiceNow.InstanceName,
-		snowUserName:     config.ServiceNow.UserName,
-		snowPassword:     config.ServiceNow.Password,
+		serviceNowClient: snowClient,
 	}
 }
 
-func (s *SnowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *snowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	data, _ := readRequestBody(r)
 	for _, alert := range data.Alerts {
 		for k, v := range s.defaultIncident {

@@ -29,10 +29,6 @@ func NewServiceNowClient(instanceName, apiPath, userName, password string) (*Ser
 		return nil, errors.New("no instancename specified")
 	}
 
-	if apiPath == "" {
-		apiPath = "/api/now/table/incident"
-	}
-
 	if userName == "" {
 		return nil, errors.New("no username specified")
 	}

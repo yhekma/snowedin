@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"github.com/cloudflare/cfssl/log"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"net/http"
@@ -13,7 +14,19 @@ func TestGetParsedString(t *testing.T) {
 	config := Config{}
 	configYaml, _ := ioutil.ReadFile("config.yaml")
 	_ = yaml.Unmarshal(configYaml, &config)
-	server := CreateSnowServer(config)
+	snowConfig := config.ServiceNow
+
+	snowClient, err := NewServiceNowClient(
+		snowConfig.InstanceName,
+		snowConfig.ApiPath,
+		snowConfig.UserName,
+		snowConfig.Password,
+	)
+	if err != nil {
+		log.Errorf("could not create servicnowclient. %v", err)
+	}
+
+	server := CreateSnowServer(config, snowClient)
 
 	testjson, _ := ioutil.ReadFile("test.json")
 
