@@ -3,15 +3,15 @@
 pipeline {
   agent none
   options {
-      buildDiscarder(logRotator(numToKeepStr: '5'))
-      disableConcurrentBuilds()
+    buildDiscarder(logRotator(numToKeepStr: '5'))
+    disableConcurrentBuilds()
   }
 
   stages {
-    stage('Prepare') {
+    stage('Prepare Environment') {
       agent any
       steps {
-        prepareEnvironment('prometheus-reader')
+        prepareEnvironment()
       }
     }
 
@@ -55,3 +55,4 @@ pipeline {
       }
     }
 }
+
