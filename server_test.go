@@ -23,17 +23,17 @@ func (s StubClient) create(body []byte) ([]byte, error) {
 	return s.doRequest(req)
 }
 
-func TestGetParsedString(t *testing.T) {
+func TestParsing(t *testing.T) {
 	config := Config{}
-	configYaml, _ := ioutil.ReadFile("config.yaml")
+	configYaml, _ := ioutil.ReadFile("tests/config.yaml")
 	_ = yaml.Unmarshal(configYaml, &config)
 
 	server := CreateSnowServer(config, StubClient{})
 
-	testjson, _ := ioutil.ReadFile("test.json")
-	testjsonwant, _ := ioutil.ReadFile("test_want.json")
+	testjson, _ := ioutil.ReadFile("tests/test.json")
+	testjsonwant, _ := ioutil.ReadFile("tests/test_want.json")
 
-	t.Run("test if we get a string back", func(t *testing.T) {
+	t.Run("test if json parsing/templating works", func(t *testing.T) {
 		request := NewJsonPostRequest(testjson, "/webhook")
 		response := httptest.NewRecorder()
 
