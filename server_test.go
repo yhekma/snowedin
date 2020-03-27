@@ -40,8 +40,8 @@ func TestParsing(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		var (
-			gotJson  interface{}
-			wantJson interface{}
+			gotJson  map[string]string
+			wantJson map[string]string
 		)
 
 		err := json.Unmarshal(response.Body.Bytes(), &gotJson)
@@ -49,6 +49,12 @@ func TestParsing(t *testing.T) {
 			t.Errorf("could not parse json from response. %v", err)
 		}
 		_ = json.Unmarshal(testjsonwant, &wantJson)
+
+		if _, ok := gotJson["u_correlation_id"]; !ok {
+			t.Errorf("didn't get u_correlation_id back from json %v", wantJson)
+		}
+		// Remove u_correlation_id from returned map, since it's epoch time
+		delete(gotJson, "u_correlation_id")
 
 		if !reflect.DeepEqual(gotJson, wantJson) {
 			t.Errorf("got '%s' want '%s'", gotJson, wantJson)

@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"github.com/prometheus/alertmanager/template"
 	"net/http"
+	"strconv"
 	tmpltext "text/template"
+	"time"
 )
 
 type snowServer struct {
@@ -30,9 +32,11 @@ func (s *snowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			incident[k] = parsedText
 		}
 	}
+	timestamp := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
+	incident["u_correlation_id"] = timestamp
 	b, _ := json.Marshal(incident)
 	resp, _ := s.serviceNowClient.create(b)
-	fmt.Fprintf(w, string(resp))
+	_, _ = fmt.Fprintf(w, string(resp))
 }
 
 func readRequestBody(r *http.Request) (template.Data, error) {
