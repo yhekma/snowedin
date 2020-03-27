@@ -1,15 +1,13 @@
 package main
 
 import (
+	"flag"
 	"github.com/prometheus/common/log"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"net/http"
 	"os"
 )
-
-// TODO: make this an argument
-const configFile = "config.yaml"
 
 type Config struct {
 	DefaultIncident map[string]string `yaml:"default_incident"`
@@ -29,32 +27,49 @@ type Client interface {
 }
 
 func main() {
-	username := os.Getenv("SERVICENOW_USERNAME")
-	password := os.Getenv("SERVICENOW_PASSWORD")
+	flagUsername := flag.String("username", "", "username for servicenow")
+	flagPassword := flag.String("password", "", "password for servicenow")
+	configFile := flag.String("config", "config.yaml", "configfile")
+	flag.Parse()
+
+	envUsername := os.Getenv("SERVICENOW_USERNAME")
+	envPassword := os.Getenv("SERVICENOW_PASSWORD")
+
 	config := Config{}
-	configYaml, err := ioutil.ReadFile(configFile)
+	configYaml, err := ioutil.ReadFile(*configFile)
+	err = yaml.Unmarshal(configYaml, &config)
 	if err != nil {
 		log.Errorf("Could not read configfile %s. %v", configYaml, err)
 	}
 
-	err = yaml.Unmarshal(configYaml, &config)
+	snowConfig := config.ServiceNow
+	var (
+		username string
+		password string
+	)
+
 	if err != nil {
 		log.Errorf("Could not parse configfile %s. %v", configYaml, err)
 	}
 
-	snowConfig := config.ServiceNow
-	if username == "" {
-		username = snowConfig.UserName
+	switch {
+	case *flagUsername == "":
+		username = envUsername
+	default:
+		username = *flagUsername
 	}
-	if password == "" {
-		password = snowConfig.Password
+	switch {
+	case *flagPassword == "":
+		password = envPassword
+	default:
+		password = envPassword
 	}
 
 	snowClient, err := NewServiceNowClient(
 		snowConfig.InstanceName,
 		snowConfig.ApiPath,
-		username,
 		password,
+		username,
 	)
 	if err != nil {
 		log.Errorf("could not create servicnowclient. %v", err)
