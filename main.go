@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/prometheus/common/log"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -29,6 +30,8 @@ type Client interface {
 func main() {
 	flagUsername := flag.String("username", "", "username for servicenow")
 	flagPassword := flag.String("password", "", "password for servicenow")
+	flagInstanceName := flag.String("instance", "", "name if the instance to use. <name>.service-now.com")
+	listenPort := flag.String("port", "5000", "port to listen on")
 	configFile := flag.String("config", "config.yaml", "configfile")
 	flag.Parse()
 
@@ -44,8 +47,9 @@ func main() {
 
 	snowConfig := config.ServiceNow
 	var (
-		username string
-		password string
+		username     string
+		password     string
+		instanceName string
 	)
 
 	if err != nil {
@@ -64,12 +68,18 @@ func main() {
 	default:
 		password = envPassword
 	}
+	switch {
+	case *flagInstanceName == "":
+		instanceName = snowConfig.InstanceName
+	default:
+		instanceName = *flagInstanceName
+	}
 
 	snowClient, err := NewServiceNowClient(
-		snowConfig.InstanceName,
+		instanceName,
 		snowConfig.ApiPath,
-		password,
 		username,
+		password,
 	)
 	if err != nil {
 		log.Errorf("could not create servicnowclient. %v", err)
@@ -77,8 +87,8 @@ func main() {
 
 	server := CreateSnowServer(config, snowClient)
 
-	if err := http.ListenAndServe(":5000", server); err != nil {
-		log.Fatalf("could not listen to port 5000 %v", err)
+	if err := http.ListenAndServe(fmt.Sprintf(":"+*listenPort), server); err != nil {
+		log.Fatalf("could not listen to port %s %v", *listenPort, err)
 	}
 
 }

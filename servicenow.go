@@ -50,8 +50,8 @@ func (snClient *ServiceNowClient) doRequest(req *http.Request) ([]byte, error) {
 	req.Header.Set("Authorization", snClient.authHeader)
 	resp, err := snClient.client.Do(req)
 
-	if err != nil || resp.StatusCode != 200 {
-		log.Errorf("Error sending the request. %s", err)
+	if err != nil {
+		log.Errorf("Error sending the request. %v", err)
 		return nil, err
 	}
 
