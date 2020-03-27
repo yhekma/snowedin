@@ -12,7 +12,6 @@ import (
 
 const (
 	servicenowBaseUrl = "https://%s.service-now.com"
-	servicenowAPIPath = "%s"
 )
 
 type Incident map[string]string
