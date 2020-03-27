@@ -32,8 +32,15 @@ func main() {
 	username := os.Getenv("SERVICENOW_USERNAME")
 	password := os.Getenv("SERVICENOW_PASSWORD")
 	config := Config{}
-	configYaml, _ := ioutil.ReadFile(configFile)
-	_ = yaml.Unmarshal(configYaml, &config)
+	configYaml, err := ioutil.ReadFile(configFile)
+	if err != nil {
+		log.Errorf("Could not read configfile %s. %v", configYaml, err)
+	}
+
+	err = yaml.Unmarshal(configYaml, &config)
+	if err != nil {
+		log.Errorf("Could not parse configfile %s. %v", configYaml, err)
+	}
 
 	snowConfig := config.ServiceNow
 	if username == "" {

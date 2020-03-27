@@ -44,7 +44,10 @@ func TestParsing(t *testing.T) {
 			wantJson interface{}
 		)
 
-		_ = json.Unmarshal(response.Body.Bytes(), &gotJson)
+		err := json.Unmarshal(response.Body.Bytes(), &gotJson)
+		if err != nil {
+			t.Errorf("could not parse json from response. %v", err)
+		}
 		_ = json.Unmarshal(testjsonwant, &wantJson)
 
 		if !reflect.DeepEqual(gotJson, wantJson) {
