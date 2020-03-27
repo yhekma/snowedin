@@ -54,5 +54,5 @@ pipeline {
         publishDocker('latest')
       }
     }
+  }
 }
-
