@@ -30,7 +30,8 @@ func (s *snowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data, _ := readRequestBody(r)
-	fmt.Printf("---------\nIncoming:\n%s\n----------\n", data)
+	jsonData, _ := json.Marshal(data)
+	fmt.Printf("---------\nIncoming:\n%s\n----------\n", jsonData)
 	incident := Incident{}
 	for _, alert := range data.Alerts {
 		for k, v := range s.defaultIncident {
