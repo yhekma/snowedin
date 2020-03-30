@@ -58,6 +58,8 @@ func (snClient *ServiceNowClient) doRequest(req *http.Request) ([]byte, error) {
 	if err != nil {
 		log.Errorf("Error reading response body. %s", err)
 		return nil, err
+	} else {
+		fmt.Printf("%s\n", responseBody)
 	}
 
 	return responseBody, nil
