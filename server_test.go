@@ -56,8 +56,10 @@ func TestParsing(t *testing.T) {
 		// Remove u_correlation_id from returned map, since it's epoch time
 		delete(gotJson, "u_correlation_id")
 
+		x, _ := json.Marshal(gotJson)
+
 		if !reflect.DeepEqual(gotJson, wantJson) {
-			t.Errorf("got '%s' want '%s'", gotJson, wantJson)
+			t.Errorf("got\n%s\nwant\n%s\n", x, string(testjsonwant))
 		}
 	})
 

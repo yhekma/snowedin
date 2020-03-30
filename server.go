@@ -33,11 +33,9 @@ func (s *snowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	jsonData, _ := json.Marshal(data)
 	fmt.Printf("---------\nIncoming:\n%s\n----------\n", jsonData)
 	incident := Incident{}
-	for _, alert := range data.Alerts {
-		for k, v := range s.defaultIncident {
-			parsedText, _ := applyTemplate(v, alert)
-			incident[k] = parsedText
-		}
+	for k, v := range s.defaultIncident {
+		parsedText, _ := applyTemplate(v, data)
+		incident[k] = parsedText
 	}
 	timestamp := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
 	incident["u_correlation_id"] = timestamp
@@ -56,7 +54,7 @@ func readRequestBody(r *http.Request) (template.Data, error) {
 	return data, err
 }
 
-func applyTemplate(text string, data template.Alert) (string, error) {
+func applyTemplate(text string, data template.Data) (string, error) {
 	tmpl, err := tmpltext.New("n").Parse(text)
 	if err != nil {
 		return "", err
