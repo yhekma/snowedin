@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"net/http"
@@ -24,11 +25,12 @@ func (s StubClient) create(body []byte) ([]byte, error) {
 }
 
 func TestParsing(t *testing.T) {
+	log.SetLevel(logrus.PanicLevel)
 	config := Config{}
 	configYaml, _ := ioutil.ReadFile("tests/config.yaml")
 	_ = yaml.Unmarshal(configYaml, &config)
 
-	server := CreateSnowServer(config, StubClient{})
+	server := CreateSnowServer(config, StubClient{}, log)
 
 	testJson, _ := ioutil.ReadFile("tests/test.json")
 	testJsonWant, _ := ioutil.ReadFile("tests/test_want.json")

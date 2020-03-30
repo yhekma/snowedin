@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/prometheus/common/log"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 )
@@ -21,9 +21,10 @@ type ServiceNowClient struct {
 	apiPath    string
 	authHeader string
 	client     *http.Client
+	log        *logrus.Logger
 }
 
-func NewServiceNowClient(instanceName, apiPath, userName, password string) (*ServiceNowClient, error) {
+func NewServiceNowClient(instanceName, apiPath, userName, password string, log *logrus.Logger) (*ServiceNowClient, error) {
 	if instanceName == "" {
 		return nil, errors.New("no instancename specified")
 	}
@@ -41,6 +42,7 @@ func NewServiceNowClient(instanceName, apiPath, userName, password string) (*Ser
 		apiPath:    apiPath,
 		authHeader: fmt.Sprintf("Basic %s", base64.URLEncoding.EncodeToString([]byte(userName+":"+password))),
 		client:     http.DefaultClient,
+		log:        log,
 	}, nil
 }
 
@@ -50,7 +52,7 @@ func (snClient *ServiceNowClient) doRequest(req *http.Request) ([]byte, error) {
 	resp, err := snClient.client.Do(req)
 
 	if err != nil {
-		log.Errorf("Error sending the request. %v", err)
+		snClient.log.Errorf("Error sending the request. %v", err)
 		return nil, err
 	}
 
@@ -59,7 +61,7 @@ func (snClient *ServiceNowClient) doRequest(req *http.Request) ([]byte, error) {
 		log.Errorf("Error reading response body. %s", err)
 		return nil, err
 	} else {
-		fmt.Printf("----------------\nResponse: \n%s\n------------\n", responseBody)
+		snClient.log.WithFields(logrus.Fields{"data": responseBody}).Debug("Response from ServiceNow")
 	}
 
 	return responseBody, nil
@@ -70,7 +72,7 @@ func (snClient *ServiceNowClient) create(body []byte) ([]byte, error) {
 	url := fmt.Sprint(snClient.baseURL, snClient.apiPath)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	if err != nil {
-		log.Errorf("Error creating request. %s", err)
+		snClient.log.Errorf("Error creating request. %s", err)
 		return nil, err
 	}
 

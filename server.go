@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/prometheus/alertmanager/template"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
 	tmpltext "text/template"
@@ -14,12 +15,14 @@ import (
 type snowServer struct {
 	defaultIncident  map[string]string
 	serviceNowClient Client
+	log              *logrus.Logger
 }
 
-func CreateSnowServer(config Config, snowClient Client) *snowServer {
+func CreateSnowServer(config Config, snowClient Client, log *logrus.Logger) *snowServer {
 	return &snowServer{
 		defaultIncident:  config.DefaultIncident,
 		serviceNowClient: snowClient,
+		log:              log,
 	}
 }
 
@@ -36,7 +39,7 @@ func (s *snowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonData, _ := json.Marshal(data)
-	fmt.Printf("---------\nIncoming:\n%s\n----------\n", jsonData)
+	s.log.WithFields(logrus.Fields{"data": string(jsonData)}).Debug("Incoming request")
 	incident := Incident{}
 	for k, v := range s.defaultIncident {
 		parsedText, _ := applyTemplate(v, data)
@@ -44,7 +47,7 @@ func (s *snowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	timestamp := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
 	incident["u_correlation_id"] = timestamp
-	fmt.Printf("----------\nParsed:\n%s\n------------\n", incident)
+	s.log.WithFields(logrus.Fields{"incident": incident}).Debug("Created incident map")
 	b, _ := json.Marshal(incident)
 	resp, _ := s.serviceNowClient.create(b)
 	_, _ = fmt.Fprintf(w, string(resp))
