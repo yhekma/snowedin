@@ -40,6 +40,7 @@ func (s *snowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	timestamp := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
 	incident["u_correlation_id"] = timestamp
 	b, _ := json.Marshal(incident)
+	fmt.Printf("---------\nProcessessing:\n%v\n----------", incident)
 	resp, _ := s.serviceNowClient.create(b)
 	_, _ = fmt.Fprintf(w, string(resp))
 }
