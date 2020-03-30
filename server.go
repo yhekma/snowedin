@@ -24,6 +24,11 @@ func CreateSnowServer(config Config, snowClient Client) *snowServer {
 }
 
 func (s *snowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	data, _ := readRequestBody(r)
 	incident := Incident{}
 	for _, alert := range data.Alerts {

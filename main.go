@@ -10,6 +10,8 @@ import (
 	"os"
 )
 
+const listenPort = "5000"
+
 type Config struct {
 	DefaultIncident map[string]string `yaml:"default_incident"`
 	ServiceNow      SnowConfig        `yaml:"servicenow_config"`
@@ -28,15 +30,12 @@ type Client interface {
 }
 
 func main() {
-	flagUsername := flag.String("username", "", "username for servicenow")
-	flagPassword := flag.String("password", "", "password for servicenow")
-	flagInstanceName := flag.String("instance", "", "name if the instance to use. <name>.service-now.com")
-	listenPort := flag.String("port", "5000", "port to listen on")
 	configFile := flag.String("config", "config.yaml", "configfile")
 	flag.Parse()
 
 	envUsername := os.Getenv("SERVICENOW_USERNAME")
 	envPassword := os.Getenv("SERVICENOW_PASSWORD")
+	envInstanceName := os.Getenv("SERVICENOW_INSTANCE_NAME")
 
 	config := Config{}
 	configYaml, err := ioutil.ReadFile(*configFile)
@@ -57,22 +56,22 @@ func main() {
 	}
 
 	switch {
-	case *flagUsername == "":
+	case envUsername == "":
+		username = snowConfig.UserName
+	default:
 		username = envUsername
-	default:
-		username = *flagUsername
 	}
 	switch {
-	case *flagPassword == "":
-		password = envPassword
+	case envPassword == "":
+		password = snowConfig.Password
 	default:
 		password = envPassword
 	}
 	switch {
-	case *flagInstanceName == "":
+	case envInstanceName == "":
 		instanceName = snowConfig.InstanceName
 	default:
-		instanceName = *flagInstanceName
+		instanceName = envInstanceName
 	}
 
 	snowClient, err := NewServiceNowClient(
@@ -87,8 +86,8 @@ func main() {
 
 	server := CreateSnowServer(config, snowClient)
 
-	if err := http.ListenAndServe(fmt.Sprintf(":"+*listenPort), server); err != nil {
-		log.Fatalf("could not listen to port %s %v", *listenPort, err)
+	if err := http.ListenAndServe(fmt.Sprintf(":"+listenPort), server); err != nil {
+		log.Fatalf("could not listen to port %s %v", listenPort, err)
 	}
 
 }
