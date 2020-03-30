@@ -60,6 +60,17 @@ func TestParsing(t *testing.T) {
 			t.Errorf("got '%s' want '%s'", gotJson, wantJson)
 		}
 	})
+
+	t.Run("see if we get 200 back on get", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/", nil)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		if response.Code != 200 {
+			t.Errorf("invalid response. Want 200, got %d", response.Code)
+		}
+	})
 }
 
 func NewJsonPostRequest(json []byte, url string) *http.Request {
