@@ -30,25 +30,25 @@ func TestParsing(t *testing.T) {
 
 	server := CreateSnowServer(config, StubClient{})
 
-	testjson, _ := ioutil.ReadFile("tests/test.json")
-	testjsonwant, _ := ioutil.ReadFile("tests/test_want.json")
+	testJson, _ := ioutil.ReadFile("tests/test.json")
+	testJsonWant, _ := ioutil.ReadFile("tests/test_want.json")
+
+	var (
+		gotJson  map[string]string
+		wantJson map[string]string
+	)
 
 	t.Run("test if json parsing/templating works", func(t *testing.T) {
-		request := NewJsonPostRequest(testjson, "/webhook")
+		request := NewJsonPostRequest(testJson, "/webhook")
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
-
-		var (
-			gotJson  map[string]string
-			wantJson map[string]string
-		)
 
 		err := json.Unmarshal(response.Body.Bytes(), &gotJson)
 		if err != nil {
 			t.Errorf("could not parse json from response. %v", err)
 		}
-		_ = json.Unmarshal(testjsonwant, &wantJson)
+		_ = json.Unmarshal(testJsonWant, &wantJson)
 
 		if _, ok := gotJson["u_correlation_id"]; !ok {
 			t.Errorf("didn't get u_correlation_id back from json %v", wantJson)
@@ -59,7 +59,7 @@ func TestParsing(t *testing.T) {
 		x, _ := json.Marshal(gotJson)
 
 		if !reflect.DeepEqual(gotJson, wantJson) {
-			t.Errorf("got\n%s\nwant\n%s\n", x, string(testjsonwant))
+			t.Errorf("got\n%s\nwant\n%s\n", x, string(testJsonWant))
 		}
 	})
 

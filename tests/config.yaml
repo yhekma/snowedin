@@ -1,13 +1,13 @@
 ---
 default_incident:
   u_contact_type: event_alert
-  u_impact: 3
+  u_impact: "{{ .CommonAnnotations.impact }}"
   u_urgency: 3
   u_category: application
   u_state: 1
   u_business_service: TNT-ServiceDesk
-  u_assignment_group: TNT_SPT_GLB_TEMTOOLING
-  u_short_description: "{{.CommonLabels.alertname}} is firing"
+  u_assignment_group: "{{ .CommonAnnotations.assignment_group}}"
+  u_short_description: "Alerts from group: {{ range $key, $val := .GroupLabels}}{{ $key }}:{{ $val }} {{end}}"
   u_description: Test automated long desc
   u_function: Create
   u_correlation_display: api

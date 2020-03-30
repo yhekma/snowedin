@@ -1,37 +1,39 @@
 {
-  "receiver": "webhook",
+  "receiver": "pdsm",
   "status": "firing",
   "alerts": [
     {
       "status": "firing",
       "labels": {
-        "alertname": "Test",
-        "dc": "eu-west-1",
-        "instance": "localhost:9090",
-        "job": "prometheus24"
+        "alertname": "TestAlert",
+        "goto": "pdsm",
+        "prometheus": "monitoring/prometheus-operator-prometheus"
       },
       "annotations": {
-        "description": "some description"
+        "assignment_group": "apac_dcops",
+        "description": "test alert",
+        "impact": "3",
+        "urgency": "3"
       },
-      "startsAt": "2018-08-03T09:52:26.739266876+02:00",
+      "startsAt": "2020-03-30T09:33:45.470372903Z",
       "endsAt": "0001-01-01T00:00:00Z",
-      "generatorURL": "http://simon-laptop:9090/graph?g0.expr=go_memstats_alloc_bytes+%3E+0\u0026g0.tab=1"
+      "generatorURL": "http://prometheus.aem.fxi-nonprod.az.fxei.fedex.com/graph?g0.expr=vector%281%29&g0.tab=1",
+      "fingerprint": "bd25e5f572b6d5b4"
     }
   ],
   "groupLabels": {
-    "alertname": "Test",
-    "job": "prometheus24"
+    "alertname": "TestAlert"
   },
   "commonLabels": {
-    "alertname": "Test",
-    "dc": "eu-west-1",
-    "instance": "localhost:9090",
-    "job": "prometheus24"
+    "alertname": "TestAlert",
+    "goto": "pdsm",
+    "prometheus": "monitoring/prometheus-operator-prometheus"
   },
   "commonAnnotations": {
-    "description": "some description"
+    "assignment_group": "apac_dcops",
+    "description": "test alert",
+    "impact": "3",
+    "urgency": "3"
   },
-  "externalURL": "http://simon-laptop:9093",
-  "version": "4",
-  "groupKey": "{}:{alertname=\"Test\", job=\"prometheus24\"}"
+  "externalURL": "http://prometheus-operator-alertmanager.monitoring:9093"
 }
