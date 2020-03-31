@@ -26,6 +26,7 @@ func (s StubClient) create(body []byte) ([]byte, error) {
 
 func TestParsing(t *testing.T) {
 	log.SetLevel(logrus.PanicLevel)
+	//log.SetLevel(logrus.DebugLevel)
 	config := Config{}
 	configYaml, _ := ioutil.ReadFile("tests/config.yaml")
 	_ = yaml.Unmarshal(configYaml, &config)
@@ -34,6 +35,7 @@ func TestParsing(t *testing.T) {
 
 	testJson, _ := ioutil.ReadFile("tests/test.json")
 	testJsonWant, _ := ioutil.ReadFile("tests/test_want.json")
+	testJsonResolved, _ := ioutil.ReadFile("tests/test_resolved.json")
 
 	var (
 		gotJson  map[string]string
@@ -73,6 +75,21 @@ func TestParsing(t *testing.T) {
 
 		if response.Code != 200 {
 			t.Errorf("invalid response. Want 200, got %d", response.Code)
+		}
+	})
+
+	t.Run("see if we get 200 and empty body back on resolved", func(t *testing.T) {
+		request := NewJsonPostRequest(testJsonResolved, "/webhook")
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		if response.Code != 200 {
+			t.Errorf("didn't get 200 on posting resolved got %d", response.Code)
+		}
+
+		if response.Body.String() != "" {
+			t.Errorf("did not get emoty body on resolved got %s", response.Body.String())
 		}
 	})
 }

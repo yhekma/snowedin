@@ -1,0 +1,39 @@
+{
+  "receiver": "pdsm",
+  "status": "resolved",
+  "alerts": [
+    {
+      "status": "resolved",
+      "labels": {
+        "alertname": "TestAlert",
+        "goto": "pdsm",
+        "prometheus": "monitoring/prometheus-operator-prometheus"
+      },
+      "annotations": {
+        "assignment_group": "apac_dcops",
+        "description": "test alert",
+        "impact": "3",
+        "urgency": "3"
+      },
+      "startsAt": "2020-03-30T09:33:45.470372903Z",
+      "endsAt": "0001-01-01T00:00:00Z",
+      "generatorURL": "http://prometheus.aem.fxi-nonprod.az.fxei.fedex.com/graph?g0.expr=vector%281%29&g0.tab=1",
+      "fingerprint": "bd25e5f572b6d5b4"
+    }
+  ],
+  "groupLabels": {
+    "alertname": "TestAlert"
+  },
+  "commonLabels": {
+    "alertname": "TestAlert",
+    "goto": "pdsm",
+    "prometheus": "monitoring/prometheus-operator-prometheus"
+  },
+  "commonAnnotations": {
+    "assignment_group": "apac_dcops",
+    "description": "test alert",
+    "impact": "3",
+    "urgency": "3"
+  },
+  "externalURL": "http://prometheus-operator-alertmanager.monitoring:9093"
+}
