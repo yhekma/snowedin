@@ -43,7 +43,7 @@ func TestParsing(t *testing.T) {
 	)
 
 	t.Run("test if json parsing/templating works", func(t *testing.T) {
-		request := NewJsonPostRequest(testJson, "/webhook")
+		request := newJsonPostRequest(testJson, "/webhook")
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
@@ -73,20 +73,16 @@ func TestParsing(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 
-		if response.Code != 200 {
-			t.Errorf("invalid response. Want 200, got %d", response.Code)
-		}
+		checkResponseCode(t, response.Code, 200)
 	})
 
 	t.Run("see if we get 200 and empty body back on resolved", func(t *testing.T) {
-		request := NewJsonPostRequest(testJsonResolved, "/webhook")
+		request := newJsonPostRequest(testJsonResolved, "/webhook")
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
 
-		if response.Code != 200 {
-			t.Errorf("didn't get 200 on posting resolved got %d", response.Code)
-		}
+		checkResponseCode(t, response.Code, 200)
 
 		if response.Body.String() != "" {
 			t.Errorf("did not get emoty body on resolved got %s", response.Body.String())
@@ -94,7 +90,14 @@ func TestParsing(t *testing.T) {
 	})
 }
 
-func NewJsonPostRequest(json []byte, url string) *http.Request {
+func newJsonPostRequest(json []byte, url string) *http.Request {
 	req, _ := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(json))
 	return req
+}
+
+func checkResponseCode(t *testing.T, code, want int) {
+	t.Helper()
+	if code != want {
+		t.Errorf("got wrong response code got %d want %d", code, want)
+	}
 }
