@@ -38,8 +38,11 @@ func (s *snowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jsonData, _ := json.Marshal(data)
-	s.log.WithFields(logrus.Fields{"data": string(jsonData)}).Debug("Incoming request")
+	if s.log.Level == logrus.DebugLevel {
+		jsonData, _ := json.Marshal(data)
+		s.log.WithFields(logrus.Fields{"data": string(jsonData)}).Debug("Incoming request")
+	}
+
 	incident := Incident{}
 	for k, v := range s.defaultIncident {
 		parsedText, _ := applyTemplate(v, data)
@@ -47,7 +50,12 @@ func (s *snowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	timestamp := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
 	incident["u_correlation_id"] = timestamp
-	s.log.WithFields(logrus.Fields{"incident": incident}).Debug("Created incident map")
+
+	if s.log.Level == logrus.DebugLevel {
+		jsonData, _ := json.Marshal(incident)
+		s.log.WithFields(logrus.Fields{"incident": string(jsonData)}).Debug("Created incident map")
+	}
+
 	b, _ := json.Marshal(incident)
 	resp, _ := s.serviceNowClient.create(b)
 	_, _ = fmt.Fprintf(w, string(resp))
