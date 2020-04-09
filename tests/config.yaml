@@ -13,5 +13,5 @@ default_incident:
   u_correlation_display: api
 
 servicenow_config:
-  instance_name: pdsmdev08
+  instance_name: pdsmdev1
   api_path: /api/now/import/u_incident

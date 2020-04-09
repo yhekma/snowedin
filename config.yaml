@@ -5,13 +5,13 @@ default_incident:
   u_urgency: 3
   u_category: application
   u_state: 1
-  u_business_service: TNT-ServiceDesk
-  u_assignment_group: TNT_SPT_GLB_TEMTOOLING
+  u_business_service: My-Service
+  u_assignment_group: My-Group
   u_short_description: "{{.Labels.alertname}} is firing"
   u_description: Test automated long desc
   u_function: Create
   u_correlation_display: api
 
 servicenow_config:
-  instance_name: pdsmdev08
+  instance_name: pdsmdev1
   api_path: /api/now/import/u_incident
