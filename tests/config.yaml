@@ -5,7 +5,7 @@ default_incident:
   u_urgency: 3
   u_category: application
   u_state: 1
-  u_business_service: TNT-ServiceDesk
+  u_business_service: My-Servicedesk
   u_assignment_group: "{{ .CommonAnnotations.assignment_group}}"
   u_short_description: "Alerts from group: {{ range $key, $val := .GroupLabels}}{{ $key }}:{{ $val }} {{end}}"
   u_description: Test automated long desc
