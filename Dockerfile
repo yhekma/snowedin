@@ -9,6 +9,5 @@ FROM alpine:3.10.3
 RUN adduser -S -D -H -h /app appuser
 USER appuser
 COPY --from=builder /build/snowedin /app/
-COPY --from=builder /build/tests/config.yaml /app/
 WORKDIR /app
 ENTRYPOINT ["./snowedin"]
