@@ -61,7 +61,7 @@ func (snClient *ServiceNowClient) doRequest(req *http.Request) ([]byte, error) {
 		log.Errorf("Error reading response body. %s", err)
 		return nil, err
 	} else {
-		snClient.log.WithFields(logrus.Fields{"data": responseBody}).Debug("Response from ServiceNow")
+		snClient.log.WithFields(logrus.Fields{"data": responseBody}).Info("Response from ServiceNow")
 	}
 
 	return responseBody, nil
