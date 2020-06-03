@@ -1,4 +1,5 @@
 ---
+debug: false
 default_incident:
   u_contact_type: event_alert
   u_impact: 3

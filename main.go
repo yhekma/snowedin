@@ -17,6 +17,7 @@ var log = logrus.New()
 type Config struct {
 	DefaultIncident map[string]string `yaml:"default_incident"`
 	ServiceNow      SnowConfig        `yaml:"servicenow_config"`
+	Debug           bool              `yaml:"debug"`
 }
 
 type SnowConfig struct {
@@ -42,7 +43,7 @@ func main() {
 
 	if *debug {
 		log.SetLevel(logrus.DebugLevel)
-		log.Debug("Running in debug mode")
+		log.Debug("Running in debug mode as specified on command line")
 	}
 
 	envUsername := os.Getenv("SERVICENOW_USERNAME")
@@ -59,6 +60,11 @@ func main() {
 
 	if err != nil {
 		log.Fatalf("Could not parse configfile %s. %v", configYaml, err)
+	}
+
+	if !*debug && config.Debug {
+		log.SetLevel(logrus.DebugLevel)
+		log.Debug("running in debug mode as specified in config")
 	}
 
 	snowConfig := config.ServiceNow
